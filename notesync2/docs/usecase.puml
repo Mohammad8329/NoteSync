@@ -1,0 +1,65 @@
+@startuml
+left to right direction
+skinparam dpi 150
+skinparam packageStyle rectangle
+
+actor "Guest" as Guest
+actor "Registered User" as User
+actor "Document Owner" as Owner
+actor "External AI / OpenAI" as ExternalAI
+
+package "Document Management" {
+  usecase "Create Document" as UC_Create
+  usecase "Edit Document" as UC_Edit
+  usecase "Delete Document" as UC_Delete
+  usecase "View Document" as UC_View
+  usecase "Share / Get Link" as UC_Share
+}
+
+package "Collaboration" {
+  usecase "Real-time Collaboration (Live cursors)" as UC_RealTime
+  usecase "Invite User / Share Access" as UC_Invite
+  usecase "Manage Users & Permissions" as UC_ManageUsers
+}
+
+package "AI Features" {
+  usecase "Chat With Document (Q&A)" as UC_ChatDoc
+  usecase "Summarize / Translate Document" as UC_Summarize
+  usecase "Generate Suggestions / Edits" as UC_Suggest
+}
+
+package "Account & Workspace" {
+  usecase "Sign In / Authenticate" as UC_SignIn
+  usecase "Sign Out" as UC_SignOut
+}
+
+' Actors relationships
+Guest --> UC_View
+User --> UC_Create
+User --> UC_Edit
+User --> UC_View
+User --> UC_RealTime
+User --> UC_Invite
+User --> UC_ChatDoc
+User --> UC_Summarize
+
+Owner --> UC_Delete
+Owner --> UC_ManageUsers
+Owner --> UC_Share
+
+UC_ChatDoc .> ExternalAI : "requests/receives"
+UC_Summarize .> ExternalAI : "uses AI service"
+UC_Suggest .> ExternalAI : "optional"
+
+' Grouping notes
+note right of UC_RealTime
+  Uses Liveblocks provider
+  (real-time cursors, presence)
+end note
+
+note left of UC_ChatDoc
+  Uses OpenAI / Workers AI fallback
+  (chatToDocument in backend)
+end note
+
+@enduml
